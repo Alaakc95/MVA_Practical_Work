@@ -87,7 +87,7 @@ plot_theme = theme_classic() + theme(plot.title = element_text(hjust = 0.5, size
                                                               axis.text.x  = element_text(size = 12),
                                                               axis.text.y  = element_text(size = 12))
 #Continuous Univariate Variables
-CUVarsars = function(yfeature, ylabel) {
+CUVars = function(yfeature, ylabel) {
   
     ggplot(AllWineData, aes(x = "", y = yfeature)) + geom_boxplot(fill = "#0000FF", outlier.colour = "red", outlier.shape = 1) +
     stat_boxplot(geom = "errorbar", width = 0.5) + labs( y = ylabel, title = paste(ylabel, "Distribution")) +plot_theme
