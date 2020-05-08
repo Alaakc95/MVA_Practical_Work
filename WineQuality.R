@@ -180,6 +180,7 @@ t11 = CUVars(AllWineData$alcohol, "Alcohol")
 
 plot_grid(t1, t2, t3, t4, t5, t6, t7, t8, t9 ,t10, t11)
 
+write.table(AllWineData, file = "AllWineDataPreProcessed.csv", sep = ";")
 ############# End of Pre-processing of the data #############
 
 
