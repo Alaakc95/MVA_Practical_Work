@@ -1,6 +1,7 @@
 rm(list=ls())
 library(FactoMineR)
 library(factoextra)
+library(PCAmixdata)
 
 #Read the data
 AllWineData <- read.table("AllWineDataPreProcessed.csv", header=TRUE, sep=";")
@@ -8,14 +9,13 @@ indnames <- rownames(AllWineData)
 varnames <- colnames(AllWineData)
 
 #PCA
-pca <-PCA(AllWineData, quali.sup = 13, graph = F, scale = T)
+pca <-PCA(AllWineData[,-13], graph = F, scale = T)
 
 # Extract eigenvalues/variances
 get_eig(pca)
 
 # Visualize eigenvalues
 pca.eigenvalues <- pca$eig[,c("eigenvalue")]
-col.line = "magenta"
 plot(pca.eigenvalues,  type = "o", xlab = "Dimensions", ylab = "Eigenvalue", main = "Screeplot"
      , col = "blue")
 
@@ -55,12 +55,41 @@ fviz_pca_ind(pca, col.ind = "cos2",
             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
             repel = F)
 
-# Biplot of individuals and variables
-fviz_pca_biplot(pca, repel = F)
+ind.p <- fviz_pca_ind(pca, geom = "point", col.ind = AllWineData$wine_type)
+ggpubr::ggpar(ind.p,
+              title = "Individuals - PCA",
+              xlab = "PC1", ylab = "PC2",
+              legend.title = "Wine type", legend.position = "top",
+              ggtheme = theme_gray(), palette = c("#FA2A09", "#EFC000FF")
+)
 
-# individuals // PC killed // Interesting one // Using repel = TRUE no overlapping among name points
-fviz_pca_ind(pca,
-             label = "none", # hide individual labels
-             habillage = AllWineData$quality, # color by groups
-             palette = c("#00AFBB", "#E7B800"),
-             addEllipses = T, repel = F)
+fviz_pca_biplot(pca, 
+                col.ind = AllWineData$wine_type, palette = c("#FA2A09", "#EFC000FF"), 
+                addEllipses = TRUE, label = "var",
+                col.var = "black", repel = TRUE,
+                legend.title = "Wine type")
+
+fviz_pca_biplot(pca, 
+                # Individuals
+                geom.ind = "point",
+                fill.ind = AllWineData$wine_type, col.ind = "black",
+                pointshape = 21, pointsize = 2,
+                palette = c("#FA2A09", "#EFC000FF"),
+                addEllipses = TRUE,
+                # Variables
+                alpha.var ="contrib", col.var = "contrib",
+                gradient.cols = "RdYlBu",
+                
+                legend.title = list(fill = "Species", color = "Contrib",
+                                    alpha = "Contrib")
+)
+
+#Latent concepts
+split <- splitmix(AllWineData[,-13])
+res.pcamix <- PCAmix(X.quanti=split$X.quanti, X.quali=split$X.quali, rename.level=TRUE, graph=FALSE, ndim=25)
+res.sup <- supvar(res.pcamix, X.quanti.sup = NULL, X.quali.sup = AllWineData[13], rename.level=TRUE)
+res.pcarot <- PCArot(res.sup, dim=2, graph=FALSE)
+plot(res.sup, choice="cor", coloring.var=TRUE, axes=c(1, 2), leg=TRUE, posleg="topleft", 
+     main="Variables before rotation")
+plot(res.pcarot, choice="cor", coloring.var=TRUE, axes=c(1, 2), leg=TRUE, posleg="topright", 
+     main="Variables - PCA after rotation")
