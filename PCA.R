@@ -9,7 +9,7 @@ indnames <- rownames(AllWineData)
 varnames <- colnames(AllWineData)
 
 #PCA
-pca <-PCA(AllWineData[,-13], graph = F, scale = T)
+pca <-PCA(AllWineData[,-13], quali.sup = 12, graph = F, scale = T)
 
 # Extract eigenvalues/variances
 get_eig(pca)
@@ -85,9 +85,12 @@ fviz_pca_biplot(pca,
 )
 
 #Latent concepts
-split <- splitmix(AllWineData[,-13])
-res.pcamix <- PCAmix(X.quanti=split$X.quanti, X.quali=split$X.quali, rename.level=TRUE, graph=FALSE, ndim=25)
-res.sup <- supvar(res.pcamix, X.quanti.sup = NULL, X.quali.sup = AllWineData[13], rename.level=TRUE)
+X.quanti <- splitmix(AllWineData)$X.quanti[,1:11]
+X.quanti.sup <-splitmix(AllWineData)$X.quanti[,12]
+data(wine)
+split$quan
+res.pcamix <- PCAmix(X.quanti, NULL, rename.level=TRUE, graph=FALSE, ndim=25)
+res.sup <- supvar(res.pcamix, X.quanti.sup = X.quanti.sup, X.quali.sup = AllWineData[13], rename.level=TRUE)
 res.pcarot <- PCArot(res.sup, dim=2, graph=FALSE)
 plot(res.sup, choice="cor", coloring.var=TRUE, axes=c(1, 2), leg=TRUE, posleg="topleft", 
      main="Variables before rotation")

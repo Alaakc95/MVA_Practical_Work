@@ -46,8 +46,22 @@ grid.table(rf.results[,1:2])
 
 model <- randomForest(taste ~ . - quality, data=train, ntree=ntrees.best,proximity=TRUE, importance=TRUE,
                       keep.forest=TRUE)
-varImpPlot(model)
-model
+varImpPlot(model, main = "Importance of variables")
+impvar <- importance(model)
+plot(impvar)
 prediction <- predict(model, newdata = test)
+# What variables are being used in the forest (their total counts)
+var <- varUsed(model, by.tree=FALSE, count = TRUE)
+var = as.data.frame((var))
+rownames(var) = colnames(test[,1:11])
+barplot(as.matrix(t(var)), las=2, cex.names = 0.55)
+title("Variables being used in the forest")
+
 result <- table(prediction, test$taste)
-accuracy <- (result[1,1]+result[2,2]+result[3,3]+result[4,4])/nrow(test)*100
+round(100*(1-sum(diag(ct.test))/sum(ct.test)),2)
+#Precision
+(precision <- diag(result) / rowSums(result))
+#Recall
+(recall <- (diag(result) / colSums(result)))
+#accuracy
+(accuracy <- sum(diag(result)) / sum(result))
