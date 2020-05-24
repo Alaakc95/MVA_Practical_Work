@@ -58,7 +58,7 @@ barplot(as.matrix(t(var)), las=2, cex.names = 0.55)
 title("Variables being used in the forest")
 
 result <- table(prediction, test$taste)
-round(100*(1-sum(diag(ct.test))/sum(ct.test)),2)
+round(100*(1-sum(diag(result))/sum(result)),2)
 #Precision
 (precision <- diag(result) / rowSums(result))
 #Recall
