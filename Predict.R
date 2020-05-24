@@ -10,7 +10,7 @@ title(main = "Quality distribution")
 AllWineData$taste <- ifelse(AllWineData$quality < 5, "bad", "good")
 AllWineData$taste[AllWineData$quality == 5] <- "normal"
 AllWineData$taste[AllWineData$quality == 6] <- "normal"
-AllWineData$taste[AllWineData$quality > 8] <- "excellent"
+AllWineData$taste[AllWineData$quality >= 8] <- "excellent"
 AllWineData$taste <- as.factor(AllWineData$taste)
 plot(AllWineData$taste)
 title(main= "Quality Distribution")

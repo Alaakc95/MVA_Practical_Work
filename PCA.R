@@ -87,8 +87,6 @@ fviz_pca_biplot(pca,
 #Latent concepts
 X.quanti <- splitmix(AllWineData)$X.quanti[,1:11]
 X.quanti.sup <-splitmix(AllWineData)$X.quanti[,12]
-data(wine)
-split$quan
 res.pcamix <- PCAmix(X.quanti, NULL, rename.level=TRUE, graph=FALSE, ndim=25)
 res.sup <- supvar(res.pcamix, X.quanti.sup = X.quanti.sup, X.quali.sup = AllWineData[13], rename.level=TRUE)
 res.pcarot <- PCArot(res.sup, dim=2, graph=FALSE)
