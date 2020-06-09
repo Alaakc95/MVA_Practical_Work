@@ -4,12 +4,12 @@ library(factoextra)
 library(PCAmixdata)
 
 #Read the data
-AllWineData <- read.table("AllWineDataPreProcessed.csv", header=TRUE, sep=";")
-indnames <- rownames(AllWineData)
-varnames <- colnames(AllWineData)
+WineData <- read.table("AllWineDataPreProcessed.csv", header=TRUE, sep=";")
+indnames <- rownames(WineData)
+varnames <- colnames(WineData)
 
 #PCA
-pca <-PCA(AllWineData[,-13], quali.sup = 12, graph = F, scale = T)
+pca <-PCA(WineData[,-13], quali.sup = 12, graph = F, scale = T)
 
 # Extract eigenvalues/variances
 get_eig(pca)
@@ -55,7 +55,7 @@ fviz_pca_ind(pca, col.ind = "cos2",
             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
             repel = F)
 
-ind.p <- fviz_pca_ind(pca, geom = "point", col.ind = AllWineData$wine_type)
+ind.p <- fviz_pca_ind(pca, geom = "point", col.ind = WineData$wine_type)
 ggpubr::ggpar(ind.p,
               title = "Individuals - PCA",
               xlab = "PC1", ylab = "PC2",
@@ -64,7 +64,7 @@ ggpubr::ggpar(ind.p,
 )
 
 fviz_pca_biplot(pca, 
-                col.ind = AllWineData$wine_type, palette = c("#FA2A09", "#EFC000FF"), 
+                col.ind = WineData$wine_type, palette = c("#FA2A09", "#EFC000FF"), 
                 addEllipses = TRUE, label = "var",
                 col.var = "black", repel = TRUE,
                 legend.title = "Wine type")
@@ -72,9 +72,9 @@ fviz_pca_biplot(pca,
 fviz_pca_biplot(pca, 
                 # Individuals
                 geom.ind = "point",
-                fill.ind = AllWineData$wine_type, col.ind = "black",
+                fill.ind = WineData$wine_type, col.ind = "black",
                 pointshape = 21, pointsize = 2,
-                palette = c("#FA2A09", "#EFC000FF"),
+                palette = c("#F1C40F", "#2ECC71"),
                 addEllipses = TRUE,
                 # Variables
                 alpha.var ="contrib", col.var = "contrib",
@@ -84,11 +84,36 @@ fviz_pca_biplot(pca,
                                     alpha = "Contrib")
 )
 
+ForBiplotQuality <- WineData
+ForBiplotQuality$quality <- as.factor(ForBiplotQuality$quality)
+
+fviz_pca_biplot(pca, 
+                col.ind = ForBiplotQuality$quality, palette = c("#2C3E50", "#D35400","#F1C40F", "#1E8449", 
+                                                                "#2471A3", "#9B59B6", "#C0392B" ), 
+                addEllipses = FALSE, label = "var",
+                col.var = "black", repel = TRUE,
+                legend.title = "Wine type")
+
+fviz_pca_biplot(pca, 
+                 # Individuals
+                 geom.ind = "point",
+                 fill.ind = ForBiplotQuality$quality, col.ind = "black",
+                 pointshape = 21, pointsize = 2,
+                 palette = c("#F1C40F", "#2ECC71","#27AE60", "#16A085", "#1ABC9C", "#3498DB", "#2980B9" ),
+                 addEllipses = TRUE,
+                 # Variables
+                 alpha.var ="contrib", col.var = "contrib",
+                 gradient.cols = "RdYlBu",
+                 
+                 legend.title = list(fill = "Species", color = "Contrib",
+                                     alpha = "Contrib")
+)
+
 #Latent concepts
-X.quanti <- splitmix(AllWineData)$X.quanti[,1:11]
-X.quanti.sup <-splitmix(AllWineData)$X.quanti[,12]
+X.quanti <- splitmix(WineData)$X.quanti[,1:11]
+X.quanti.sup <-splitmix(WineData)$X.quanti[,12]
 res.pcamix <- PCAmix(X.quanti, NULL, rename.level=TRUE, graph=FALSE, ndim=25)
-res.sup <- supvar(res.pcamix, X.quanti.sup = X.quanti.sup, X.quali.sup = AllWineData[13], rename.level=TRUE)
+res.sup <- supvar(res.pcamix, X.quanti.sup = X.quanti.sup, X.quali.sup = WineData[13], rename.level=TRUE)
 res.pcarot <- PCArot(res.sup, dim=2, graph=FALSE)
 plot(res.sup, choice="cor", coloring.var=TRUE, axes=c(1, 2), leg=TRUE, posleg="topleft", 
      main="Variables before rotation")
